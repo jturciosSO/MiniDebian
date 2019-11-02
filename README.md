@@ -69,7 +69,7 @@ void kmain(void)
 
 {
 
-	const char *str = "Hola mundo. Integrantes: Walter Herrera, Jhonatan Turcios y David Melara ";
+	const char *str = "Hola mundo. Coordinador David Melara ";
 	
 	char *vidptr = (char*)0xb8000; 	// la memoria de video inicia aqui.
 	
