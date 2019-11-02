@@ -1,0 +1,305 @@
+/* Aqui es donde se colocara la parte de la resta en la calculadora */
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// Prototipo de función Extracto 
+string Extracto(string, int, int = -1);
+
+// Prototipo de función Rango
+int* Rango(int, int, int = 1);
+
+// Devuelve verdadero si el caracter es encontrado en una cadena
+bool Buscar(char caracter, string cadena)
+{
+    int i = 0;
+    while (cadena[i]) {
+        
+        // Evalúa uno por uno cada índice de la cadena
+        if (cadena[i] == caracter)
+            return true;
+
+        i++;
+
+    }
+
+    return false;
+}
+
+// Devuelve la longitud de caracteres de una cadena
+int Longitud(string cadena)
+{
+    int i = 0;
+    
+    while (cadena[i])
+        i++;
+
+    return i;
+}
+
+// Devuelve una subcadena de la cadena principal
+string Extracto(string cadena, int indice, int longitud)
+{
+    string extracto = "";
+    
+    // Si el valor del índice es negativo, calculará desde el final de la cadena
+    if (indice < 0)
+        indice = Longitud(cadena) + indice; 
+        
+    // Si la longitud es negativa, se devolverá una subcadena hasta el 
+    // final de la cadena principal
+    if (longitud == -1)
+        longitud = Longitud(cadena) - indice;
+    
+    // Si el índice indicado no existe se devolverá una cadena vacía
+    if (!cadena[indice])
+        return "";
+    
+    // Se obtiene el rango de índices que se extraerá de la cadena original
+    int* indices = Rango(indice, indice + longitud - 1); 
+    
+    int i = 0;
+    while (longitud) {
+        
+        if (indices[i] > Longitud(cadena))
+            return extracto;
+        else
+            extracto += cadena[indices[i]];
+            
+        i++; longitud--;
+    }
+    
+    return extracto;
+}
+
+// Devuelve la posición de la primera coincidencia de un caracter 
+//   en una cadena dada.
+int Posicion(char caracter, string cadena)
+{
+    int i = 0;
+
+    while (cadena[i]) {
+
+        if (cadena[i] == caracter)
+            return i;
+
+        i++;
+
+    }
+
+    return -1;
+}
+
+// Devuelve un arreglo de números dentro de un rango dado
+int* Rango(int inicio, int fin, int salto) 
+{
+    int longitud = 0;
+    
+    // Calcula el número de números que tendrá el rango indicado
+    // Esto por que es posible indicar el tamaño del salto
+    
+    // El rango es ascendente
+    if (inicio < fin) 
+        for (int i = inicio; i <= fin; i+= salto)
+            longitud++;
+    
+    // El rango es descendente
+    else
+        for (int i = fin; i >=  inicio; i-= salto)
+            longitud++;
+    
+    int* rango = new int[longitud]; // Declara el tamaño del arreglo exacto
+    int indice = 0;
+    
+    int valor = inicio;
+    while (longitud > 0) {
+        rango[indice] = valor;
+        
+        indice += 1;
+        valor += 1 * salto;         // Indica el tamaño del salto
+        longitud--;
+    }
+    
+    return rango;
+}
+
+// Repite una cadena N-cantidad de veces
+string Repetir(string cadena, unsigned int nveces)
+{
+    string repetir = "";
+    
+    while (nveces-- > 0)
+        repetir += cadena;
+    
+    return repetir;
+}
+
+// Iguala el número de dígitos de dos números dados
+void Alinear(string &a, string &b)
+{
+    int A, B;
+
+    // 1. Busca el punto decimal
+    if (Buscar('.', a))
+        A = Posicion('.', a);
+    else
+        A = Longitud(a);
+
+    if (Buscar('.', b))
+        B = Posicion('.', b);
+    else
+        B = Longitud(b);
+
+    // 2. Determina qué número es mayor y agrega ceros
+    //      a la izquierda del menor.    
+    if (A > B)
+        b = Repetir("0", A - B) + b;
+    else
+        a = Repetir("0", B - A) + a;
+
+    // 3. Agrega ceros en la parte decimal del número
+    //     con menos decimales.    
+    if (Longitud(a) > Longitud(b))
+        b += Repetir("0", Longitud(a) - Longitud(b));
+    else
+        a += Repetir("0", Longitud(b) - Longitud(a));
+}
+
+// Devuelve TRUE si el primer parámetro representa un número
+//  mayor que el segundo número
+bool EsMayor(string a, string b)
+{
+    // Primero alinea los números
+    Alinear(a, b);
+
+    int i = 0;
+
+    // Solo se verican los dígitos hasta antes del punto decimal
+    while (a[i] && a[i] != '.') 
+    {
+        if (a[i] > b[i]) 
+            return true;
+        
+        else if (a[i] < b[i])
+            return false;
+
+        i++;
+    }
+
+    return true;
+}
+
+// Intercambia los valores de 2 variables
+void Intercambiar(string &a, string &b)
+{
+    string c = a;
+    
+    a = b; b = c;
+}
+
+string TablaResta(char x, char y)
+{
+    string resta = "";
+
+    string tabla[10][10] = {
+        {  "0",  "-1",  "-2",  "-3",  "-4",  "-5",  "-6",  "-7",  "-8",  "-9"},
+        {  "1",   "0",  "-1",  "-2",  "-3",  "-4",  "-5",  "-6",  "-7",  "-8"},
+        {  "2",   "1",   "0",  "-1",  "-2",  "-3",  "-4",  "-5",  "-6",  "-7"},
+        {  "3",   "2",   "1",   "0",  "-1",  "-2",  "-3",  "-4",  "-5",  "-6"},
+        {  "4",   "3",   "2",   "1",   "0",  "-1",  "-2",  "-3",  "-4",  "-5"},
+        {  "5",   "4",   "3",   "2",   "1",   "0",  "-1",  "-2",  "-3",  "-4"},
+        {  "6",   "5",   "4",   "3",   "2",   "1",   "0",  "-1",  "-2",  "-3"},
+        {  "7",   "6",   "5",   "4",   "3",   "2",   "1",   "0",  "-1",  "-2"},
+        {  "8",   "7",   "6",   "5",   "4",   "3",   "2",   "1",   "0",  "-1"},
+        {  "9",   "8",   "7",   "6",   "5",   "4",   "3",   "2",   "1",   "0"}
+    };
+
+    return tabla[x - 48][y - 48];
+}
+
+string TablaResta(string x, char y)
+{
+    string resta = "";
+
+    string tabla[10][10] = {
+        { "10",   "9",   "8",   "7",   "6",   "5",   "4",   "3",   "2",   "1"},
+        { "11",  "10",   "9",   "8",   "7",   "6",   "5",   "4",   "3",   "2"},
+        { "12",  "11",  "10",   "9",   "8",   "7",   "6",   "5",   "4",   "3"},
+        { "13",  "12",  "11",  "10",   "9",   "8",   "7",   "6",   "5",   "4"},
+        { "14",  "13",  "12",  "11",  "10",   "9",   "8",   "7",   "6",   "5"},
+        { "15",  "14",  "13",  "12",  "11",  "10",   "9",   "8",   "7",   "6"},
+        { "16",  "15",  "14",  "13",  "12",  "11",  "10",   "9",   "8",   "7"},
+        { "17",  "16",  "15",  "14",  "13",  "12",  "11",  "10",   "9",   "8"},
+        { "18",  "17",  "16",  "15",  "14",  "13",  "12",  "11",  "10",   "9"},
+        { "19",  "18",  "17",  "16",  "15",  "14",  "13",  "12",  "11",  "10"}
+    };
+
+    return tabla[x[1] - 48][y - 48];
+}
+
+string Resta(string a, string b)
+{
+    string signo, resta;
+
+    // Pregunta si a es mayor a b, sino no es (! = negación)
+    //  intercambia los valores y asigna el signo menos.
+    if (!EsMayor(a, b)) {
+        Intercambiar(a, b);
+
+        signo = "-";
+    }
+
+    Alinear(a, b);
+
+    // Empezará a recorrer cada dígito de derecha a izquierda
+    int i = Longitud(a) - 1;
+    
+    while (i > -1) 
+    {
+        if (a[i] == '.')
+            resta = '.' + resta;
+        
+        else {
+            string diferencia = TablaResta(a[i], b[i]); 
+            
+            // El valor de 'diferencia' es negativo?
+            if (diferencia[0] == '-') {
+                int j = i - 1;
+
+                // Moverse al dígito a la izquierda.  Puede que encontremos
+                //  un dígito '0' al que deberíamos 'prestar'.
+                while (a[j] == '0' || a[j] == '.') 
+                {
+                    if (a[j] == '0') a[j] = '9';
+
+                    j--;
+                }
+
+                a[j] = TablaResta(a[j], '1')[0];
+
+                // Volvemos a consultar la tabla de resta (sobrecargada)
+                diferencia = TablaResta("1" + string(1, a[i]), b[i]);
+            }
+
+            resta = diferencia + resta;
+        }
+        
+        i--;
+    }
+
+    // Quita el punto decimal si no tiene decimales
+    if (Extracto(resta, -1) == ".")
+        resta = Extracto(resta, 0, Longitud(resta) - 1);
+
+    // Quita el 0 a la izquierda si el valor de la resta NO está 
+    //  en el rango 0 a 1
+    if (resta[0] == '0' && resta[1] != '.')
+        resta = Extracto(resta, 1);
+    
+    return signo + resta;
+}
+
+int main() {
+    cout << Resta("4.50", "1001.37");  // Debe imprimir -3.13
+}
