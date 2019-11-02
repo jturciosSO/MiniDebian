@@ -1,0 +1,195 @@
+/* Esta es la parte donde se programara la parte de la suma en la opcion de calculadora */
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// Devuelve verdadero si el caracter es encontrado en una cadena
+bool Buscar(char caracter, string cadena)
+{
+    int i = 0;
+    while (cadena[i]) {
+        
+        // Evalúa uno por uno cada índice de la cadena
+        if (cadena[i] == caracter)
+            return true;
+
+        i++;
+
+    }
+
+    return false;
+}
+
+// Devuelve la longitud de caracteres de una cadena
+int Longitud(string cadena)
+{
+    int i = 0;
+    
+    while (cadena[i])
+        i++;
+
+    return i;
+}
+
+// Devuelve la posición de la primera coincidencia de un caracter 
+//   en una cadena dada.
+int Posicion(char caracter, string cadena)
+{
+    int i = 0;
+
+    while (cadena[i]) {
+
+        if (cadena[i] == caracter)
+            return i;
+
+        i++;
+
+    }
+
+    return -1;
+}
+
+// Repite una cadena N-cantidad de veces
+string Repetir(string cadena, unsigned int nveces)
+{
+    string repetir = "";
+    
+    while (nveces-- > 0)
+        repetir += cadena;
+    
+    return repetir;
+}
+
+// Iguala el número de dígitos de dos números dados
+void Alinear(string &a, string &b)
+{
+    int A, B;
+
+    // 1. Busca el punto decimal
+    if (Buscar('.', a))
+        A = Posicion('.', a);
+    else
+        A = Longitud(a);
+
+    if (Buscar('.', b))
+        B = Posicion('.', b);
+    else
+        B = Longitud(b);
+
+    // 2. Determina qué número es mayor y agrega ceros
+    //      a la izquierda del menor.    
+    if (A > B)
+        b = Repetir("0", A - B) + b;
+    else
+        a = Repetir("0", B - A) + a;
+
+    // 3. Agrega ceros en la parte decimal del número
+    //     con menos decimales.    
+    if (Longitud(a) > Longitud(b))
+        b += Repetir("0", Longitud(a) - Longitud(b));
+    else
+        a += Repetir("0", Longitud(b) - Longitud(a));
+}
+
+// Suma 2 digitos buscando en su tabla de suma (a lo primaria).
+//   También permite especificar un valor de acarreo.
+string TablaSuma(char x, char y, char acarreo)
+{
+    string suma = "";
+
+    string tabla[11][10] = {
+        { "0",  "1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9"},
+        { "1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9", "10"},
+        { "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9", "10", "11"},
+        { "3",  "4",  "5",  "6",  "7",  "8",  "9", "10", "11", "12"},
+        { "4",  "5",  "6",  "7",  "8",  "9", "10", "11", "12", "13"},
+        { "5",  "6",  "7",  "8",  "9", "10", "11", "12", "13", "14"},
+        { "6",  "7",  "8",  "9", "10", "11", "12", "13", "14", "15"},
+        { "7",  "8",  "9", "10", "11", "12", "13", "14", "15", "16"},
+        { "8",  "9", "10", "11", "12", "13", "14", "15", "16", "17"},
+        { "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"},
+        {"10", "11", "12", "13", "14", "15", "16", "17", "18", "19"}
+    };
+
+    if (acarreo) x += (acarreo - 48);
+
+    return tabla[x - 48][y - 48]; 
+}
+
+// Devuelve una subcadena de una cadena principal
+string Extracto(string cadena, int indice, int longitud = -1)
+{
+    string extracto = "";
+
+    if (indice < 0) 
+        indice = Longitud(cadena) + indice;
+
+    if (longitud == -1)
+        longitud = Longitud(cadena) - indice;
+    
+    else if (longitud < -1)
+        longitud = Longitud(cadena) + longitud;
+
+    if (!cadena[indice]) return "";
+
+    for (int i = indice; i < longitud; i++)
+        extracto += cadena[i];
+
+    return extracto;
+}
+
+// Suma dos números 
+// Calcula incluso números con punto decimal
+string Suma(string a, string b)
+{
+    string suma, c;
+    char acarreo = '0';
+    int i; 
+
+    Alinear(a, b);
+
+    // Calcula la longitud de a (dado que b tiene la misma longitud)
+    i = Longitud(a) - 1;
+    while (i > -1) {
+        
+        // Si encuentra el punto decimal simplemente salta
+        //  a la siguiente posición
+        if (a[i] == '.')
+            suma = '.' + suma;
+        
+        else {
+            c = TablaSuma(a[i], b[i], acarreo); // acarreo de la suma anterior
+
+            // Determina si la suma resulta en un número
+            //  de 2 dígitos
+            if (Longitud(c) > 1) {
+                acarreo = c[0]; c = c[1];
+            
+            } else
+                acarreo = '0';  // No hay acarreo
+
+            suma = c + suma;
+        }
+
+        i--;
+    }
+
+    // Aún puede haber un valor de acarreo que hay que 
+    if (acarreo != '0') suma = acarreo + suma;
+
+    // Elimina los ceros decimales (a la derecha) y redondea
+    i = Longitud(suma) - 1; // e.g. 12.00
+    
+    while (suma[i] == '0') suma = Extracto(suma, 0, i--); 
+
+    // Elimina el punto decimal si quedó como última caracter
+    if (suma[Longitud(suma) - 1] == '.')
+        suma = Extracto(suma, 0, Longitud(suma) - 1);
+
+    return suma;
+}
+
+int main() {
+    cout << Suma("157.5", "2556.07");
+}
